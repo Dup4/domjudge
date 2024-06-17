@@ -377,6 +377,16 @@ class Problem extends BaseApiEntity implements
         return $this->contest_problems;
     }
 
+    public function getContestProblem(Contest $contest): ?ContestProblem
+    {
+        foreach ($this->getContestProblems() as $contestProblem) {
+            if ($contestProblem->getContest() === $contest) {
+                return $contestProblem;
+            }
+        }
+        return null;
+    }
+
     public function addSubmission(Submission $submission): Problem
     {
         $this->submissions[] = $submission;

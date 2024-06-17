@@ -239,6 +239,11 @@ class Clarification extends BaseApiEntity implements
         return $this->problem;
     }
 
+    public function getContestProblem(): ?ContestProblem
+    {
+        return $this->problem?->getContestProblem($this->contest);
+    }
+
     public function getProblemId(): ?int
     {
         return $this->getProblem()?->getProbid();
