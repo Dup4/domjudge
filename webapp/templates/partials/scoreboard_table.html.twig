@@ -42,9 +42,6 @@
     {# output table column groups (for the styles) #}
     <colgroup>
         {% if enable_ranking %}
-            {% if medalsEnabled %}
-                <col id="scoremedal"/>
-            {% endif %}
             <col id="scorerank"/>
         {% endif %}
         {% if showFlags %}
@@ -78,7 +75,7 @@
     <thead>
     <tr class="scoreheader" data-static="{{ static }}">
         {% if enable_ranking %}
-            <th title="rank" scope="col" {% if medalsEnabled %}colspan="2"{% endif %}>rank</th>
+            <th title="rank" scope="col">rank</th>
         {% endif %}
         <th title="team name" scope="col" colspan="{{ teamColspan }}">team</th>
         {% if enable_ranking %}
@@ -158,14 +155,7 @@
         {% endif %}
         <tr class="{{ classes | join(' ') }}" data-team-id="{{ score.team.teamid }}" data-team-external-id="{{ score.team.externalid }}" data-team-name="{{ score.team.effectiveName | escape('html_attr') }}">
             {% if enable_ranking %}
-                {% if medalsEnabled %}
-                    <td class="no-border">
-                        {% if medalColor != '' %}
-                            <i class="fa fa-medal {{medalColor}}" style="font-size: 1.5rem;"></i>
-                        {% endif %}
-                    </td>
-                {% endif %}
-                <td class="scorepl rank">
+                <td class="scorepl rank {{medalColor}}">
                     {# Only print rank when score is different from the previous team #}
                     {% if not displayRank %}
                         ?
@@ -324,10 +314,6 @@
                         {% set restrict = {problemId: problem.probid} %}
                         {% set link = path('jury_team', {teamId: score.team.teamid, restrict: restrict}) %}
                     {% elseif static %}
-                        {% set link = '#' %}
-                        {% set extra = 'data-submissions-url="' ~ path('public_submissions_data') ~ '"' %}
-                        {% set extra = extra ~ ' data-team-id="' ~ score.team.externalid ~ '"' %}
-                        {% set extra = extra ~ ' data-problem-id="' ~ problem.externalid ~ '"' %}
                     {% elseif public %}
                         {% set link = path('public_submissions', {teamId: score.team.externalid, problemId: problem.externalid}) %}
                         {% set extra = 'data-submissions-url="' ~ path('public_submissions_data_cell', {teamId: score.team.externalid, problemId: problem.externalid}) ~ '"' %}
@@ -446,10 +432,15 @@
         data-team-name="{{ score.team.effectiveName | escape('html_attr') }}"
         style="border-bottom-width: 0; height: 28px;">
         {% if enable_ranking %}
-            <td class="scorepl">
-                {% if medalsEnabled and medalColor != '' %}
-                    <i class="fa fa-medal {{medalColor}} d-block me-2" style="font-size: 1.5rem;"></i>
+            <td class="scorepl rank {{medalColor}}" rowspan="2">
+                {# Only print rank when score is different from the previous team #}
+                {% if not displayRank %}
+                    ?
+                {% elseif previousTeam is null or scoreboard.scores[previousTeam.teamid].rank != score.rank %}
+                    {{ score.rank }}
+                {% else %}
                 {% endif %}
+                {% set previousTeam = score.team %}
             </td>
         {% endif %}
         {% if color is null %}
@@ -540,18 +531,6 @@
         {% endif %}
     </tr>
         <tr style="height: 32px;">
-            <td>
-                {# Only print rank when score is different from the previous team #}
-                <span class="d-block me-2 rank">
-                    {% if not displayRank %}
-                        ?
-                    {% elseif previousTeam is null or scoreboard.scores[previousTeam.teamid].rank != score.rank %}
-                        {{ score.rank }}
-                    {% else %}
-                    {% endif %}
-                </span>
-                {% set previousTeam = score.team %}
-            </td>
             {% if showAffiliationLogos %}
                 {% set problemSpan = 3 %}
             {% else %}

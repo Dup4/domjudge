@@ -415,12 +415,7 @@ function initFavouriteTeams()
             if (teamname === null) {
                 continue;
             }
-            let rankElement;
-            if (mobile) {
-                rankElement = getRank(scoreboard[j + 1]);
-            } else {
-                rankElement = getRank(scoreboard[j]);
-            }
+            let rankElement = getRank(scoreboard[j]);
             var heartCol = getHeartCol(scoreboard[j]);
             if (!heartCol) {
                 continue;

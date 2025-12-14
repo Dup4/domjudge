@@ -1219,14 +1219,19 @@ EOF;
             $border = 'linen';
         }
 
-        $submissionsUrl = $static
-            ? $this->router->generate('public_submissions_data')
-            : $this->router->generate('public_submissions_data_cell', [
-                'teamId' => $score->team->getExternalid(),
-                'problemId' => $problem->getExternalId(),
-            ]);
 
-        $ret = sprintf(<<<HTML
+        $ret = $static ?
+            sprintf(<<<HTML
+                <span class="badge problem-badge"
+                      style="font-size: x-small; background-color: %s; min-width: 18px; border: 1px solid %s;">
+                    <span style="color: %s;">%s</span>
+                </span>
+                HTML,
+            $rgb,
+            $border,
+            $foreground,
+            $problem->getShortname()
+        ) : sprintf(<<<HTML
                 <span class="badge problem-badge"
                       style="font-size: x-small; background-color: %s; min-width: 18px; border: 1px solid %s;"
                       data-submissions-url="%s"
@@ -1237,7 +1242,10 @@ EOF;
                 HTML,
             $rgb,
             $border,
-            $submissionsUrl,
+            $this->router->generate('public_submissions_data_cell', [
+                'teamId' => $score->team->getExternalid(),
+                'problemId' => $problem->getExternalId(),
+            ]),
             $score->team->getExternalid(),
             $problem->getExternalId(),
             $foreground,
