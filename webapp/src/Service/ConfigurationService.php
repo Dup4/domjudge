@@ -133,26 +133,24 @@ class ConfigurationService
                 $config = [];
                 foreach ($yamlConfig as $category) {
                     foreach ($category['items'] as $item) {
-                        $config[$item['name']] = $item + ['category' => $category['category']];
+                        $config[$item['name']] = ConfigurationSpecification::fromArray(
+                            $item + ['category' => $category['category']]
+                        );
                     }
                 }
 
-                $code          = var_export($config, true);
+                $code          = var_export(serialize($config), true);
                 $specification = <<<EOF
 <?php
 
-return {$code};
+return unserialize({$code});
 EOF;
 
                 $cache->write($specification,
                     [new FileResource($yamlDbConfigFile)]);
                 // @codeCoverageIgnoreEnd
             });
-
-        return array_map(
-            fn(array $item) => ConfigurationSpecification::fromArray($item),
-            require $cacheFile
-        );
+        return require $cacheFile;
     }
 
     /**
