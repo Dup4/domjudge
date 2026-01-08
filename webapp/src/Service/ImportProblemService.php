@@ -980,7 +980,7 @@ class ImportProblemService
                 $outputValidatorName = $outputValidatorName . "_" . $clashCount;
             }
 
-            $combinedRunCompare = $validationMode == 'custom interactive';
+            $combinedRunCompare = strpos($validationMode, 'interactive') !== false;
 
             if (!($tempzipFile = tempnam($this->dj->getDomjudgeTmpDir(), "/executable-"))) {
                 throw new ServiceUnavailableHttpException(null, 'Failed to create temporary file.');
@@ -1061,7 +1061,8 @@ class ImportProblemService
         if (isset($yamlData['validation'])
             && ($yamlData['validation'] == 'custom' ||
                 $yamlData['validation'] == 'custom interactive' ||
-                $yamlData['validation'] == 'custom multi-pass')) {
+                $yamlData['validation'] == 'custom multi-pass' ||
+                $yamlData['validation'] == 'custom interactive multi-pass')) {
             $validationMode = $yamlData['validation'];
 
             if ($yamlData['validation'] == 'custom multi-pass') {
@@ -1069,6 +1070,10 @@ class ImportProblemService
             }
             if ($yamlData['validation'] == 'custom interactive') {
                 $yamlProblemProperties['typesAsString'][] = 'interactive';
+            }
+            if ($yamlData['validation'] == 'custom interactive multi-pass') {
+                $yamlProblemProperties['typesAsString'][] = 'interactive';
+                $yamlProblemProperties['typesAsString'][] = 'multi-pass';
             }
         }
 
